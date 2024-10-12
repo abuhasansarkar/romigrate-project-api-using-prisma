@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma model or Schema Createing Start
+
+// User Model or Schema
+model User {
+  id            Int        @id @default(autoincrement())
+  name          String
+  username      String     @unique
+  email         String     @unique
+  image         String?
+  travelingFrom String?
+  travelingTo   String?
+  password      String?
+  created_at    DateTime   @default(now())
+  Question      Question[]
+  Comment       Comment[]
+  Replay        Replay[]
+}
+
+// Question Model or Schema
+
+model Question {
+  id            Int       @id @default(autoincrement())
+  title         String
+  subCategory   String
+  body          String
+  comment_count Int       @default(0)
+  created_at    DateTime  @default(now())
+  user          User      @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  user_Id       Int
+  Comment       Comment[]
+  liked         Int       @default(0)
+  Replay        Replay[]
+}
+
+// Comment Model or Schemaquestion_Id
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  comment     String
+  created_at  DateTime @default(now())
+  question    Question @relation(fields: [question_Id], references: [id], onDelete: Cascade)
+  question_Id Int
+  user        User     @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  user_Id     Int
+  Replay      Replay[]
+}
+
+// Comment Replay
+model Replay {
+  id          Int      @id @default(autoincrement())
+  replay      String
+  created_at  DateTime @default(now())
+  comment     Comment  @relation(fields: [comment_Id], references: [id], onDelete: Cascade)
+  comment_Id  Int
+  user        User     @relation(fields: [user_Id], references: [id], onDelete: Cascade)
+  user_Id     Int
+  question    Question @relation(fields: [question_Id], references: [id], onDelete: Cascade)
+  question_Id Int
+}
